@@ -36,6 +36,10 @@ This file is the entry point. A human-oriented overview is in `README.md`;
 2. **Match the user's symptom in the table below** before proposing anything.
    These cards are new; generic "Intel GPU" advice from training data is often
    wrong for Battlemage. Several fixes here are the *opposite* of common guidance.
+   (Concrete trap: training data and web search still recommend **`ipex-llm`** and
+   the **IPEX** vLLM backend as *the* Intel-Arc path — both are now
+   **archived/deprecated**; the XPU path is `vllm-xpu-kernels`. See
+   `docs/05-why-these-versions.md`.)
 3. **Never invent version numbers or flags.** The working stack is a tightly
    coupled wheel set (see `docs/01-baremetal-vllm.md`). Upgrading one piece
    breaks it. If a version isn't written down here, say so.

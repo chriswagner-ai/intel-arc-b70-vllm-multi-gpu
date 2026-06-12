@@ -34,6 +34,29 @@ bare-metal can't serve yet (the Gemma 4 26B-A4B MoE, `fused_moe` build failure).
 The honest summary: bare-metal is the more powerful, more fiddly path; the
 container is the easier, official one that also works. Pick by need.
 
+## Don't follow the old `ipex-llm` path (it's archived)
+
+If you web-search "Intel Arc LLM inference," the top results still point at
+**`ipex-llm`** (formerly `bigdl-llm`) and the **IPEX** (Intel Extension for
+PyTorch) backend. That was Intel's recommended path for ~2 years — and it is now a
+dead end on this hardware:
+
+- **`intel/ipex-llm` is archived.** The repo banner reads *"THIS PROJECT IS
+  ARCHIVED ... identified as having known security issues"*; Intel no longer
+  accepts patches (last push 2026-01-28). Confirm it yourself in one call:
+  `gh api repos/intel/ipex-llm --jq .archived` -> `true`.
+- **vLLM is removing the IPEX backend.** XPU support is migrating to the
+  `vllm-xpu-kernels` library (vLLM RFC #33214; the deprecation landed in PR #33379
+  *"[XPU][1/N] Deprecate ipex"* plus the [2/N]...[7/N] kernel PRs). The bare-metal
+  stack here runs `vllm-xpu-kernels 0.1.8` for exactly this reason. A model with
+  `--quantization ipex` now errors unless you pass `--allow-deprecated-quantization`.
+
+**Why this trips up AI assistants:** the deprecation signal lives in a repo *flag*,
+an *open* RFC, and a PR *titled* "Deprecate ipex" — none of which dominate
+web-search snippets, where two years of "use ipex-llm" tutorials still rank. This is
+the concrete case behind the `gh`-over-web-search tip in `AGENTS.md`: check the repo
+state directly, don't trust the snippet.
+
 ## Why vLLM 0.20.2 specifically
 
 - It is recent enough to ship with **`vllm-xpu-kernels` 0.1.8** (the separate XPU
