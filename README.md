@@ -1,5 +1,5 @@
 # Intel Arc Pro B70 (Battlemage) — bare-metal vLLM, the working configuration
-<img width="2752" height="1536" alt="gemini_arcb70pro_bare_metal_tp4" src="https://github.com/user-attachments/assets/d9dd3470-b703-424e-ac5c-281c543f08c3" />
+<img width="1760" height="982" alt="E_1760_webp_q90" src="https://github.com/user-attachments/assets/93e48284-4880-4a48-bb57-2f22012bc773" />
 
 Field-tested record of running modern LLMs — including **Gemma 4 31B** with native
 **tool calling**, and **tensor-parallel across 4 GPUs** — on a 4× Intel Arc Pro
