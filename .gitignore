@@ -1,0 +1,14 @@
+# Python env / caches — never commit the coupled +xpu wheel set
+venv*/
+.venv*/
+__pycache__/
+*.pyc
+
+# Model weights / large artifacts
+*.safetensors
+*.gguf
+*.bin
+
+# Local logs / scratch
+*.log
+forensics/

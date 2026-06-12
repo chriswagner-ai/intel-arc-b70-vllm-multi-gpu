@@ -1,0 +1,19 @@
+# Kernel command line (informational)
+#
+# No GPU-specific kernel parameter is required once the BIOS settings
+# (docs/00-system-setup.md) and /etc/modprobe.d/xe.conf are in place.
+#
+# This host boots via Limine; the cmdline is minimal:
+#
+#   quiet nowatchdog splash rw rootflags=subvol=/@ root=UUID=<your-root-uuid>
+#
+# (Replace <your-root-uuid> with your actual root filesystem UUID.)
+#
+# Folklore that is NOT needed (tried during early debugging, then dropped):
+#   xe.max_vfs=0   pci=realloc=on   pcie_aspm=off
+# The cards run at Gen5 x16 on optimized BIOS defaults (Above 4G + Resizable BAR);
+# no GPU-specific kernel parameter is needed. An idle 'x1' in lspci is a display
+# quirk, not a real link-training failure (see docs/00-system-setup.md).
+#
+# On GRUB systems the equivalent goes in GRUB_CMDLINE_LINUX_DEFAULT in
+# /etc/default/grub (then `sudo grub-mkconfig -o /boot/grub/grub.cfg`).

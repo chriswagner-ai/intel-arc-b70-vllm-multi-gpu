@@ -1,0 +1,13 @@
+# Snippet for /etc/mkinitcpio.conf  (Arch / CachyOS initramfs generator)
+#
+# Load the `xe` GPU driver from the initramfs so the B70 cards are bound early
+# at boot. Add `xe` to the MODULES array:
+
+MODULES=(xe)
+
+# Then rebuild all initramfs images and reboot:
+#   sudo mkinitcpio -P
+#   sudo reboot
+#
+# On dracut-based distros the equivalent is a file in /etc/dracut.conf.d/ with:
+#   force_drivers+=" xe "
