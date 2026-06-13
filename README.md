@@ -146,8 +146,7 @@ cross-read them.
   vLLM-first** record focused on **multi-GPU tensor-parallel serving, which quant
   formats load on XPU, and accuracy/throughput**, plus the forensic bring-up of
   the two TP-blocking defects. They publish the efficiency and cross-card data
-  this guide doesn't; this guide goes deeper on the vLLM multi-GPU bring-up. Read
-  both. Same data behind an interactive UI at **[llmresults.com](https://llmresults.com)**.
+  this guide doesn't; this guide goes deeper on the vLLM multi-GPU bring-up.**
 
 ## Acknowledgements
 
