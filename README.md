@@ -129,6 +129,26 @@ to verify, not guess. Negative results (what does *not* work) are kept on purpos
 — they save the next person from re-running a dead end. Corrections welcome via
 issues/PRs.
 
+## Related work
+
+Other public resources on this exact hardware. They measure different slices —
+cross-read them.
+
+- **[PMZFX/intel-arc-pro-b70-benchmarks](https://github.com/PMZFX/intel-arc-pro-b70-benchmarks)**
+  — a data-dense B70 benchmark collection: `llama.cpp` SYCL/Vulkan sweeps with
+  **per-run power telemetry → tokens-per-joule**, a quantization sweep,
+  context-length and KV-quant scaling, a `llama.cpp`-vs-`vLLM-XPU` head-to-head,
+  and a cross-card table (B70 vs RTX 3090 / 3080 Ti / 3060 / 4060 / Apple M4). The
+  maintainer is an active upstream `llama.cpp` SYCL contributor.
+  **How it differs from this guide:** PMZFX is a **2× B70**,
+  **`llama.cpp`-SYCL-first**, **single-stream interactive** record *with energy
+  numbers and cross-GPU comparisons*. This guide is a **4× B70**, **bare-metal
+  vLLM-first** record focused on **multi-GPU tensor-parallel serving, which quant
+  formats load on XPU, and accuracy/throughput**, plus the forensic bring-up of
+  the two TP-blocking defects. They publish the efficiency and cross-card data
+  this guide doesn't; this guide goes deeper on the vLLM multi-GPU bring-up. Read
+  both. Same data behind an interactive UI at **[llmresults.com](https://llmresults.com)**.
+
 ## Acknowledgements
 
 ### A big thank-you to Intel
