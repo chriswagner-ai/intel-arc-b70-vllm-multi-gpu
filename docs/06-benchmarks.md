@@ -93,6 +93,35 @@ returns the first token sooner on long prompts (lowest deep-context TTFT above).
 **Decision rule:** one user + short prompts → **TP=1/TP=2**; many users **or** long
 context/RAG → **TP=4**.
 
+## Accuracy — int4 vs FP8 (GSM8K)
+
+Throughput is only half the int4 question; the other half is whether 4-bit weights
+cost accuracy. Measured on **GSM8K** (5-shot, 250 questions, greedy) — chain-of-thought
+math, where quant error compounds across reasoning steps:
+
+| Gemma 4 31B weights | strict-match | flexible-extract |
+|---------------------|-------------:|-----------------:|
+| int4 AutoRound | **96.0%** (±1.2) | 96.0% (±1.2) |
+| FP8 (compressed-tensors) | 95.6% (±1.3) | 96.8% (±1.1) |
+
+Same base model, same cards (0,1), TP=2, `--enforce-eager`, `--kv-cache-dtype fp8`,
+greedy — the only variable is the weight format, so this is a clean weight-quant-only
+A/B (lm-evaluation-harness `local-chat-completions`, `temperature=0`). The gap is
+< 1 point, inside the ±1.2% standard error; int4's strict-match (96.0%) even edges
+FP8's (95.6%).
+
+**Read this precisely.** It shows int4 caused **no large regression** — it does **not**
+prove int4 ≈ FP8 on hard reasoning. Both arms sit near ceiling (~96%) and n=250 only
+resolves gaps wider than ~2–3 points, so a *small* degradation would be invisible here;
+and GSM8K is old enough that some memorisation can't be excluded (that hits both arms
+equally, so it barely moves the *delta*, but it does inflate the absolute numbers). The
+sensitive follow-ups are a **KL-divergence of the int4 vs FP8 output distributions**
+(continuous, doesn't saturate — the metric llama.cpp uses to grade quants) and a
+**GSM-Symbolic** (number-perturbed) re-run to rule out memorisation. Safe headline:
+combined with the throughput result (int4 ~20% faster at matched TP, ~17 GB vs ~31 GB),
+**int4-AutoRound is the better B70 deployment choice for this model** — at least as
+accurate as FP8 within this test's resolution.
+
 ## KV-cache capacity (TurboQuant)
 
 On **uniform-attention** models, TurboQuant KV quant stretches the KV pool further
@@ -103,11 +132,12 @@ Blocked on hybrid/sliding-window models (Gemma) — see `04-quant-formats.md`.
 ## Honesty notes
 
 - FP8 (`tpperf-1`) and int4 (`tpperf-2`) both use llama-benchy with the **identical
-  matrix**, so the int4-vs-FP8 comparison is apples-to-apples. Throughput only —
-  int4-vs-FP8 *accuracy* was not measured in these runs.
+  matrix**, so the int4-vs-FP8 comparison is apples-to-apples. These are throughput;
+  int4-vs-FP8 **accuracy** is measured separately (GSM8K) in the Accuracy section
+  above, with its sensitivity caveats.
 - KV-pool sizes differ across runs because util and weights differ (e.g. int4 TP=4
   @ 0.65 vs FP8 TP=4 @ 0.80) — compare KV pools only within the same column.
 - Do **not** cross-compare these against older single-shot `curl` numbers (e.g. the
   ~21.8 tok/s int4 figure) — different instrument, not comparable.
 
-[llama-benchy]: https://github.com/alexziskind1/llama-benchy
+[llama-benchy]: https://github.com/eugr/llama-benchy
