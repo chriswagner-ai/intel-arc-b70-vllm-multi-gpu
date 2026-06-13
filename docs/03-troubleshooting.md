@@ -66,11 +66,16 @@ Save these together so a later session (human or AI) can diagnose without rerunn
 10. **Serialize multi-card fleet launches.** Concurrent vLLM shard-loads stack
     host RSS and OOM-kill the desktop. Start card N, poll `/v1/models` until 200,
     then start N+1. Build readiness-gating into any orchestrator from day 1.
-11. **`SYCL_UR_USE_LEVEL_ZERO_V2=0` (use the V1 UR adapter).** On the vLLM venv
-    (oneAPI 2025.3) V1 is the working multi-root path and TP serves. The V2
-    adapter (`=1`) breaks earlier — `torch._C._xpu_getDeviceCount()` throws
-    `UR_RESULT_ERROR_UNKNOWN`. (Separately, on the *host* oneAPI 2026.0 toolchain
-    V1 itself enumerates 0 devices, so this flag is specific to the 2025.3 venv.)
+11. **`SYCL_UR_USE_LEVEL_ZERO_V2=0` (use the V1 UR adapter) in the vLLM venv.**
+    The oneAPI-2025.3 venv runs TP on the V1 UR adapter — the validated,
+    benchmarked multi-root path — and the serve wrappers set it explicitly.
+    The V2 adapter (`=1`) was observed to break the torch device-count path
+    (`torch._C._xpu_getDeviceCount()` → `UR_RESULT_ERROR_UNKNOWN`), so keep `=0`.
+    Caveat for debuggers: multi-root UR / Level-Zero **device enumeration is
+    kernel-sensitive** — V1/V2 behaviour seen on one kernel need not reproduce on
+    another (a multi-root enumeration that returned 0 devices on a `7.0.x` kernel
+    succeeds on `7.1.x`). Pin the validated pairing above; don't reason from a
+    stale enumeration observation.
 12. **The Gemma 4 26B-A4B MoE hits `ZE_RESULT_ERROR_MODULE_BUILD_FAILURE`** when
     its Triton `fused_moe` kernel builds on the bare-metal toolchain. This is
     **model-specific** — MoE is not universally blocked (Qwen3-30B-A3B FP8 is the
